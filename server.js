@@ -8,7 +8,17 @@ dotenv.config({ path : './config/config.env'})
 //Db connection
 connectDB()
 
+// Routers files
+const item = require('./routes/item')
+
 const app = express()
+
+// Body parser
+app.use(express.json());
+
+//Mount Routers
+app.use('/api/v1/item', item)
+
 
 const PORT = process.env.PORT || 5000
 
