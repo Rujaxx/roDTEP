@@ -18,6 +18,11 @@ const ItemSchema = new mongoose.Schema({
         enum :['kg','lb'],
         default : 'kg'
     },
+    FOB :{
+        type : Number,
+        required : [true,'Please add a FOB'],
+        trim : true
+    },
     cap :{
         type : Number,
         required : [true,'Please add a cap'],
