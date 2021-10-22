@@ -8,6 +8,6 @@ router.route('/').post(addItem).get(getItems)
 
 router.route('/:id').get(getItem).patch(updateItem).delete(deleteItem)
 
-router.route('/calculate/:id').get(calculate)
+router.route('/calculate/:id').post(calculate)
 
 module.exports = router

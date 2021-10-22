@@ -1,6 +1,6 @@
 const Item = require('../models/Item')
+const ErrorResponse = require('../utils/errorResponse')
 const asyncHandler = require('../middleware/async');
-const { prependOnceListener } = require('../models/Item');
 
 // @desc      create a item
 // @route     POST /api/v1/items
@@ -21,8 +21,8 @@ exports.getItem = asyncHandler(async (req, res, next) => {
     let id = req.params.id
     const item = await Item.findOne({HSN :id});
     
-    if(!item){
-        res.status(400).json({success : false, message : "Not Found"})
+    if(item === null){
+      return next(new ErrorResponse('Item not found',404))
     }
 
     res.status(201).json({
@@ -56,8 +56,8 @@ exports.updateItem = asyncHandler(async (req, res, next) => {
         validators: true
       })
 
-    if(!item){
-        res.status(400).json({success : false, message : "Not Found"})
+    if(item === null){
+      return next(new ErrorResponse('Item not found',404))
     }
 
     res.status(201).json({
@@ -75,8 +75,8 @@ exports.deleteItem = asyncHandler(async (req, res, next) => {
    
     const item = await Item.findOneAndDelete({HSN :id})
 
-    if(!item){
-        res.status(400).json({success : false, message : "Not Found"})
+    if(item === null){
+      return next(new ErrorResponse('Item not found',404))
     }
 
     res.status(201).json({
@@ -89,23 +89,31 @@ exports.deleteItem = asyncHandler(async (req, res, next) => {
 // @route     GET /api/v1/items/calulate/:id
 // @access    Public
 exports.calculate = asyncHandler(async (req, res, next) => {
-  let id = req.params.id
-  const { amount , quantity} = req.body
-  const item = await Item.findOne({HSN :id});
-  const maxRewards = quantity * item.cap
-  const rewards = (amount * (item.FOB/100)) 
-  
-  let result
-  
-  if(rewards >= maxRewards){
-    result = maxRewards
-  }else{
-    result = rewards
-  }
+    let id = req.params.id
+    if(!req.body){
+      return next(new ErrorResponse('Enter amount and quantity',400))
+    }
+    const { amount , quantity} = req.body
+    const item = await Item.findOne({HSN :id});
+    
+    if(item === null){
+      return next(new ErrorResponse('Item not found',404))
+    }
+    
+    const maxRewards = quantity * item.cap
+    const rewards = (amount * (item.FOB/100)) 
+
+    let result
+
+    if(rewards >= maxRewards){
+      result = maxRewards
+    }else{
+      result = rewards
+    }
 
 
-  res.status(201).json({
-    success:true,
-    data: result
-  })    
+    res.status(201).json({
+      success:true,
+      reward: result
+    })    
 })

@@ -2,6 +2,7 @@ const express = require('express')
 const dotenv = require('dotenv')
 const cors = require('cors')
 const morgan = require('morgan')
+const errorHandler = require('./middleware/error')
 const connectDB = require('./config/db')
 
 //Load env vars
@@ -23,9 +24,12 @@ app.use(express.json());
 app.use(cors())
 
 app.use(morgan('dev'))
+
 //Mount Routers
 app.use('/api/v1/item', item)
 
+//errorHanlder
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 5000
 
